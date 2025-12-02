@@ -1,6 +1,7 @@
 package com.example.exercise_2025_12_02;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class TodoItem {
@@ -13,6 +14,7 @@ public class TodoItem {
     private ArrayList<String> relatedContacts;
     private boolean status;
     private boolean isSelected;
+    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy");
 
     public TodoItem(int itemID, String Title, String Description, LocalDateTime deadline) {
         this(itemID, Title, Description, deadline, IN_PROGRESS, new ArrayList<>());
@@ -76,5 +78,12 @@ public class TodoItem {
     }
     public void setRelatedContacts(ArrayList<String> relatedContacts) {
         this.relatedContacts = relatedContacts;
+    }
+    public DateTimeFormatter getDateTimeFormatter() {
+        return dateTimeFormatter;
+    }
+
+    public void setDateTimeFormatter(DateTimeFormatter dateTimeFormatter) {
+            this.dateTimeFormatter = dateTimeFormatter;
     }
 }
