@@ -1,6 +1,4 @@
-package com.example.exercise_2025_11_25;
-
-import static android.widget.Toast.LENGTH_SHORT;
+package com.example.exercise_2025_12_02;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -11,7 +9,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import androidx.activity.EdgeToEdge;

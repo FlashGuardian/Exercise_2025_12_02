@@ -1,8 +1,7 @@
-package com.example.exercise_2025_11_25;
+package com.example.exercise_2025_12_02;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 public class TodoItem {
     static final boolean FINISHED = true;

@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
 
-            <com.example.exercise_2025_11_25.ToggleableRadioButton
+            <com.example.exercise_2025_12_02.ToggleableRadioButton
                 android:id="@+id/itemSelected"
                 android:layout_width="48dp"
                 android:layout_height="match_parent"
