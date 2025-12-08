@@ -2,6 +2,7 @@ package com.example.exercise_2025_12_02;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -32,7 +33,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainActivity extends AppCompatActivity {
 
-    List<TodoItem> todoItemList = new ArrayList<>();
+    ToDoRepo dbHelper = new ToDoRepo(this);
+    ArrayList<TodoItem> todoItemList = new ArrayList<>();
+    SQLiteDatabase writableDb;
     ToDoItemAdapter adapter;
     ListView todoItemListView;
 
@@ -51,21 +54,16 @@ public class MainActivity extends AppCompatActivity {
                         boolean itemStatus = intent.getBooleanExtra("itemStatus", false);
                         LocalDateTime itemDeadline = LocalDateTime.parse(intent.getStringExtra("itemDeadline"), formatter);
                         ArrayList<String> itemContacts = intent.getStringArrayListExtra("itemContacts");
+                        TodoItem newItem = new TodoItem(itemID, itemTitle, itemDescription, itemDeadline, itemStatus, itemContacts);
                         if (itemID == -1){
                             itemID = ID_GEN.getAndIncrement();
-                            TodoItem newItem = new TodoItem(itemID, itemTitle, itemDescription, itemDeadline, itemStatus, itemContacts);
-                            todoItemList.add(newItem);
+                            newItem.setItemID(itemID);
+                            dbHelper.addNew(newItem);
+                            todoItemList = dbHelper.loadAll();
                         }
                         else {
-                            for (TodoItem todoItem : todoItemList) {
-                                if (todoItem.getItemID() == itemID) {
-                                    todoItem.setTitle(itemTitle);
-                                    todoItem.setDescription(itemDescription);
-                                    todoItem.setDeadline(itemDeadline);
-                                    todoItem.setStatus(itemStatus);
-                                    todoItem.setRelatedContacts(itemContacts);
-                                }
-                            }
+                            dbHelper.update(itemID, newItem);
+                            todoItemList = dbHelper.loadAll();
                         }
                         adapter.notifyDataSetChanged();
                     }
@@ -82,9 +80,11 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         getSupportActionBar().setTitle("Todo List");
+        writableDb = dbHelper.getWritableDatabase();
 
         todoItemListView = findViewById(R.id.todoItemListView);
         registerForContextMenu(todoItemListView);
+        todoItemList = dbHelper.loadAll();
         adapter = new ToDoItemAdapter(MainActivity.this, R.layout.list_item_todoitem, todoItemList);
         todoItemListView.setAdapter(adapter);
 
@@ -164,7 +164,8 @@ public class MainActivity extends AppCompatActivity {
         }
         if (item.getItemId() == R.id.context_menu_delete){
             if (info != null) {
-                todoItemList.remove(info.position);
+                dbHelper.delete(todoItemList.get(info.position).getItemID());
+                todoItemList = dbHelper.loadAll();
                 adapter.notifyDataSetChanged();
             }
         }
