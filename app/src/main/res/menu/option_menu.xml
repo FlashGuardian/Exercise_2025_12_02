@@ -9,4 +9,7 @@
     <item
         android:id="@+id/option_menu_select_all"
         android:title="Select All"/>
+    <item
+        android:id="@+id/option_menu_refresh"
+        android:title="Refresh"/>
 </menu>

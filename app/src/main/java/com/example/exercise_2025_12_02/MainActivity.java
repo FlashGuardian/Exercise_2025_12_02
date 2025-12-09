@@ -30,12 +30,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import kotlinx.coroutines.scheduling.Task;
+
 
 public class MainActivity extends AppCompatActivity {
 
     ToDoRepo dbHelper = new ToDoRepo(this);
     ArrayList<TodoItem> todoItemList = new ArrayList<>();
-    SQLiteDatabase writableDb;
     ToDoItemAdapter adapter;
     ListView todoItemListView;
 
@@ -59,12 +60,12 @@ public class MainActivity extends AppCompatActivity {
                             itemID = ID_GEN.getAndIncrement();
                             newItem.setItemID(itemID);
                             dbHelper.addNew(newItem);
-                            todoItemList = dbHelper.loadAll();
                         }
                         else {
                             dbHelper.update(itemID, newItem);
-                            todoItemList = dbHelper.loadAll();
                         }
+                        todoItemList.clear();
+                        todoItemList = dbHelper.loadAll();
                         adapter.notifyDataSetChanged();
                     }
                 }
@@ -80,10 +81,10 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         getSupportActionBar().setTitle("Todo List");
-        writableDb = dbHelper.getWritableDatabase();
 
         todoItemListView = findViewById(R.id.todoItemListView);
         registerForContextMenu(todoItemListView);
+        todoItemList.clear();
         todoItemList = dbHelper.loadAll();
         adapter = new ToDoItemAdapter(MainActivity.this, R.layout.list_item_todoitem, todoItemList);
         todoItemListView.setAdapter(adapter);
@@ -126,7 +127,10 @@ public class MainActivity extends AppCompatActivity {
             boolean found = false;
             for (int i = 0; i < todoItemList.size(); i++) {
                 if (todoItemList.get(i).isSelected()){
-                    todoItemList.remove(i);
+                    dbHelper.delete(todoItemList.get(i).getItemID());
+                    todoItemList.clear();
+                    todoItemList = dbHelper.loadAll();
+                    //todoItemList.remove(i);
                     found = true;
                     i--;
                 }
@@ -140,6 +144,9 @@ public class MainActivity extends AppCompatActivity {
             for (TodoItem item1 : todoItemList) {
                 item1.setSelected(true);
             }
+            adapter.notifyDataSetChanged();
+        }
+        if (optionId == R.id.option_menu_refresh) {
             adapter.notifyDataSetChanged();
         }
         return super.onOptionsItemSelected(item);
@@ -165,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.context_menu_delete){
             if (info != null) {
                 dbHelper.delete(todoItemList.get(info.position).getItemID());
+                todoItemList.clear();
                 todoItemList = dbHelper.loadAll();
                 adapter.notifyDataSetChanged();
             }

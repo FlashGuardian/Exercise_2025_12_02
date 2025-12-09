@@ -92,11 +92,10 @@ public class ToDoRepo extends SQLiteOpenHelper {
         todoValues.put(COLUMN_DESCR, item.getDescription());
         todoValues.put(COLUMN_IS_DONE, item.getStatus() ? 1 : 0);
         todoValues.put(COLUMN_DEADLINE, item.getDeadline().format(item.getDateTimeFormatter()));
-        db.insert(TODO_TABLE_NAME, null, todoValues);
         int rowAffected = db.update(TODO_TABLE_NAME, todoValues,
-                COLUMN_ID + "= ?", new String[]{String.valueOf(itemID)});
+                COLUMN_ID + "= " + itemID, new String[]{});
         //contact_table //todo proper logic for updating contacts
-        db.delete(CONTACT_TABLE_NAME, COLUMN_TODO_ID + "= ?", new String []{String.valueOf(itemID),});
+        db.delete(CONTACT_TABLE_NAME, COLUMN_TODO_ID + "= " + itemID, new String[]{});
         ArrayList<String> relatedContacts = item.getRelatedContacts();
         if (relatedContacts != null) {
             for (String contact : item.getRelatedContacts()) {
@@ -113,14 +112,16 @@ public class ToDoRepo extends SQLiteOpenHelper {
 
     public boolean delete(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        //todo_table
-        int rowAffected = db.delete(TODO_TABLE_NAME, COLUMN_ID + "= ?",
-                new String[]{String.valueOf(id)});
 
         //contact_table
-        db.delete(CONTACT_TABLE_NAME, COLUMN_TODO_ID + "= ?",
-                new String[]{String.valueOf(id)});
+        db.delete(CONTACT_TABLE_NAME, COLUMN_TODO_ID + "= " + id,
+                new String[]{});
+
+        //todo_table
+        int rowAffected = db.delete(TODO_TABLE_NAME, COLUMN_ID + "= " + id,
+                new String[]{});
         db.close();
+
         return rowAffected > 0;
     }
 
@@ -148,8 +149,8 @@ public class ToDoRepo extends SQLiteOpenHelper {
             String[] contactProjections ={
                     COLUMN_PHONE
             };
-            Cursor contactCursor = db.query(CONTACT_TABLE_NAME, contactProjections, COLUMN_TODO_ID + "= ?",
-                    new String[] {String.valueOf(id)}, null, null, null);
+            Cursor contactCursor = db.query(CONTACT_TABLE_NAME, contactProjections, COLUMN_TODO_ID + "= " + id,
+                    new String[] {}, null, null, null);
             ArrayList<String> relatedContacts = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String phone = cursor.getString(2);
@@ -173,7 +174,7 @@ public class ToDoRepo extends SQLiteOpenHelper {
                 COLUMN_IS_DONE
         };
         Cursor cursor = db.query(TODO_TABLE_NAME, projection,
-                COLUMN_ID + "= ?", new String[]{String.valueOf(id)}, null, null, null);
+                COLUMN_ID + "= " + id, new String[]{}, null, null, null);
         final TodoItem justToGetFormatter = new TodoItem(-1, "", "", LocalDateTime.now());
         ArrayList<TodoItem> items = new ArrayList<TodoItem>();
         if(cursor.moveToFirst()){
@@ -186,8 +187,8 @@ public class ToDoRepo extends SQLiteOpenHelper {
             String[] contactProjections ={
                     COLUMN_PHONE
             };
-            Cursor contactCursor = db.query(CONTACT_TABLE_NAME, contactProjections, COLUMN_TODO_ID + "= ?",
-                    new String[] {String.valueOf(id)}, null, null, null);
+            Cursor contactCursor = db.query(CONTACT_TABLE_NAME, contactProjections, COLUMN_TODO_ID + "= " + id,
+                    new String[] {}, null, null, null);
             ArrayList<String> relatedContacts = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String phone = cursor.getString(2);
